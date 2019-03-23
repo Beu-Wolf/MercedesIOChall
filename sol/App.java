@@ -37,14 +37,16 @@ public class App {
         String command = reader.next();
         while(!command.equals("exit")){
             switch(command){
-                case "poll":
-                poll(services, reader);
+            case "poll":
+                String[] options = tokenize(reader);
+                poll(services, options);
 
                 break;
-            /*case "fetch":
+            
+            case "fetch":
                 fetch(services, reader);
                 break;
-            case "history":
+            /*case "history":
                 history(services, reader);
                 break;*/
 
@@ -57,7 +59,7 @@ public class App {
             break;
 
             case "restore":
-                restore(reader, services);
+                restore(services, reader);
                 break;
 
             /*case "services":
@@ -113,8 +115,7 @@ public class App {
         reader.close();
     }
 
-   public static void poll(Services services, Scanner reader){
-        String[] options = tokenize(reader);
+   public static void poll(Services services, String[] options){
 
         ArrayList<String> included = new ArrayList<>();
         ArrayList<String> excluded = new ArrayList<>();
@@ -143,7 +144,32 @@ public class App {
 
     }
 
-    public static void restore(Scanner reader, Services services){
+    public static void fetch(Services services, Scanner reader){
+        String[] options = tokenize(reader);
+        int time = 5000;
+        int counter = 0;
+
+        if (options != null){
+            for (int i = 0; i < options.length; i++){
+                if(options[i].equals("--refresh")){
+                    i++;
+                    time = Integer.parseInt(options[i])*1000;
+                }
+            }
+        }
+        while (counter < 20){
+            try {
+                poll(services, options);
+                Thread.sleep(time);
+                counter++;
+            } catch(InterruptedException e){
+                    Thread.currentThread().interrupt();
+                    break;
+            }
+        }
+    }
+
+    public static void restore(Services services, Scanner reader){
        
         String[] options = tokenize(reader);
         boolean merge = false;
