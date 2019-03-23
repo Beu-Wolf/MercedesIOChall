@@ -1,22 +1,39 @@
-package sol;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 
 public class App {  
     
 
-    public static void main(String[] args) throws FileNotFoundException, IOException{
-        Services services;
-        String localFile;
+    public static void main(String[] args){
 
-        readConfig(args, services);
+    
+        Services services = new Services();
+        String localFile;
+        try {
+            readConfig(args, services);
+        } catch( IOException e) {
+            e.printStackTrace();
+        }
        
         Scanner reader = new Scanner(System.in);
 
 
-        System.out.println("#> ");
+        System.out.print("#> ");
         String command = reader.next();
         while(!command.equals("exit")){
             switch(command){
@@ -24,24 +41,28 @@ public class App {
                 poll(services, reader);
 
                 break;
-            case "fetch":
+            /*case "fetch":
                 fetch(services, reader);
                 break;
             case "history":
                 history(services, reader);
-                break;
+                break;*/
 
             case "backup":
-                backup(services, reader);
+                try {
+                    backup(services, reader);
+                } catch (IOException e){
+                    e.printStackTrace();
+                }
             break;
 
             case "restore":
                 restore(reader, services);
                 break;
 
-            case "services":
+            /*case "services":
                 services(services, reader);
-                break;
+                break; */
 
             case "help":
                 help();
@@ -55,7 +76,7 @@ public class App {
                 System.out.println("Invalid Command");
                 break;
             }
-            System.out.println("#> ");
+            System.out.print("#> ");
             command = reader.next();
         }
 
@@ -66,13 +87,18 @@ public class App {
     
     public static String[] tokenize(Scanner reader){
         String[] tokens = null;
-        while (reader.hasNextLine()){
-             tokens = reader.nextLine().split("\\s|=");
-        }
+        if (reader.hasNextLine()){
+            String token = reader.nextLine();   
+            if (!token.equals(""))
+                tokens = token.trim().split("\\s|=");
+
+        }   
+
+
         return tokens;
     }
 
-    public static void readConfig(String[] args, Services services) throws FileNotFoundException, IOException{
+    public static void readConfig(String[] args, Services services) throws IOException{
         String configFile = args[0];
         BufferedReader reader = new BufferedReader(new FileReader(configFile));
         String line;
@@ -81,7 +107,8 @@ public class App {
         line = reader.readLine();
         while(line != null){
             fields = line.split("\\|");
-            services._services.add(new Service(fields[0], fields[1]));
+            services._services.add(new Service(fields[0], fields[1], fields[2], fields[3], fields[4]));
+            line = reader.readLine();
         }
         reader.close();
     }
@@ -92,18 +119,21 @@ public class App {
         ArrayList<String> included = new ArrayList<>();
         ArrayList<String> excluded = new ArrayList<>();
 
-        for (int i = 0; i < options.length; i++){
-            if(options[i].equals("--only")){
-                i++;
-                String[] webSites = options[i].split(",");
-                for (String webSite : webSites){
-                    included.add(webSite);
-                }
-            } else if (options[i].equals("--exclude")){
-                i++;
-                String[] webSites = options[i].split(",");
-                for (String webSite: webSites){
-                    excluded.add(webSite);
+        if(options != null){
+            
+            for (int i = 0; i < options.length; i++){
+                if(options[i].equals("--only")){
+                    i++;
+                    String[] webSites = options[i].split(",");
+                    for (String webSite : webSites){
+                        included.add(webSite);
+                    }
+                } else if (options[i].equals("--exclude")){
+                    i++;
+                    String[] webSites = options[i].split(",");
+                    for (String webSite: webSites){
+                        excluded.add(webSite);
+                    }
                 }
             }
         }
@@ -116,7 +146,6 @@ public class App {
     public static void restore(Scanner reader, Services services){
        
         String[] options = tokenize(reader);
-
         boolean merge = false;
 
         if (options == null){
@@ -126,7 +155,7 @@ public class App {
             for (String s : options){
                 if (s.equals("--merge")){
                     merge = true;
-                    break;
+                    break; 
                 }
             }
         } 
@@ -135,6 +164,8 @@ public class App {
 
         try {
             open(dataFile, services, merge);
+        }catch(FileNotFoundException e) {
+            System.out.println("Please enter a valid file");
         } catch (InvalidOperationException | IOException | ClassNotFoundException e){
             e.printStackTrace();
         }

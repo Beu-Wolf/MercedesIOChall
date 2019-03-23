@@ -1,3 +1,3 @@
-github|https://status.github.com/messages
-slack|https://status.slack.com/
-bitbucket|https://status.bitbucket.org/
+github|https://metastatuspage.com/|span|status.font-large|All Systems Operational
+slack|https://status.slack.com/|h1|text_center.width_100|Slack is up and running
+bitbucket|https://status.bitbucket.org/|span|status.font-large|All Systems Operational

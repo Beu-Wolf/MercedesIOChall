@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - App",
+            "request": "launch",
+            "mainClass": "sol.App",
+            "projectName": "MercedesIOChall_4d08865"
+        }
+    ]
+}
