@@ -63,6 +63,10 @@ public class Service implements Serializable{
         return _isOnline;
     }
 
+    public ArrayList<String> getHistory(){
+        return _history;
+    }
+
     public void servicePoll(){
         try {
             Document doc = Jsoup.connect(getWebSite()).get();
@@ -85,11 +89,26 @@ public class Service implements Serializable{
         LocalDateTime now = LocalDateTime.now();
         String message = now + " - " + getState();
         addToHistory(message);
-        System.out.println("[" + getName() + "]" + " " + message);
+        System.out.println("[" + getName() + "] " + message);
         
+    }
 
+    public void merge(Service s){
+        for(String status : s.getHistory()){
+            if(!getHistory().contains(s))
+                _history.add(status);
+        }
+    }
 
+    public void showHistory(){
+        for(String s : getHistory()){
+            System.out.println(s);
+        }
+    }
 
+    @Override
+    public String toString(){
+        return getName() + " - " + getWebSite() + " - " + getTag() + " - " + getSpecifier() + " - " + isOnline();
     }
 
 

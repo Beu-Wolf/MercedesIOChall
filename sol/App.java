@@ -20,10 +20,8 @@ public class App {
     
 
     public static void main(String[] args){
-
-    
         Services services = new Services();
-        String localFile;
+
         try {
             readConfig(args, services);
         } catch( IOException e) {
@@ -39,16 +37,16 @@ public class App {
             switch(command){
             case "poll":
                 String[] options = tokenize(reader);
-                poll(services, options);
-
+                poll(services, options);    
                 break;
             
             case "fetch":
                 fetch(services, reader);
                 break;
-            /*case "history":
+            
+            case "history":
                 history(services, reader);
-                break;*/
+                break;
 
             case "backup":
                 try {
@@ -59,12 +57,12 @@ public class App {
             break;
 
             case "restore":
-                restore(services, reader);
+                services = restore(services, reader);
                 break;
 
-            /*case "services":
-                services(services, reader);
-                break; */
+            case "services":
+                services(services);
+                break; 
 
             case "help":
                 help();
@@ -169,46 +167,23 @@ public class App {
         }
     }
 
-    public static void restore(Services services, Scanner reader){
-       
+    public static void history(Services services, Scanner reader){
         String[] options = tokenize(reader);
-        boolean merge = false;
-
-        if (options == null){
-            System.out.println("Please specify a file");
-            return;
-        } else if (options.length == 2){
-            for (String s : options){
-                if (s.equals("--merge")){
-                    merge = true;
-                    break; 
+        ArrayList<String> included = new ArrayList<>();
+        
+        if (options != null){
+            for (int i = 0; i < options.length; i++){
+                if(options[i].equals("--only")){
+                    i++;
+                    String[] webSites = options[i].split(",");
+                    for (String webSite : webSites){
+                        included.add(webSite);
+                    }
                 }
             }
-        } 
-
-        String dataFile = options[options.length-1];
-
-        try {
-            open(dataFile, services, merge);
-        }catch(FileNotFoundException e) {
-            System.out.println("Please enter a valid file");
-        } catch (InvalidOperationException | IOException | ClassNotFoundException e){
-            e.printStackTrace();
         }
-    }
 
-    public static void open(String dataFile, Services services, boolean merge) throws InvalidOperationException, IOException, ClassNotFoundException{
-        ObjectInputStream in = new ObjectInputStream(new FileInputStream(dataFile));
-        Services newServices;
-
-        newServices = (Services) in.readObject();
-
-        in.close();
-        if (merge){
-
-        } else {
-            services = newServices;
-        }
+        services.history(included);
     }
 
     public static void backup(Services services, Scanner reader) throws IOException{
@@ -244,6 +219,55 @@ public class App {
         }
 
     }
+
+    public static Services restore(Services services, Scanner reader){
+       
+        String[] options = tokenize(reader);
+        boolean merge = false;
+
+        if (options == null){
+            System.out.println("Please specify a file");
+            return services;
+        } else if (options.length == 2){
+            for (String s : options){
+                if (s.equals("--merge")){
+                    merge = true;
+                    break; 
+                }
+            }
+        } 
+
+        String dataFile = options[options.length-1];
+
+        try {
+            return open(dataFile, services, merge);
+        }catch(FileNotFoundException e) {
+            System.out.println("Please enter a valid file");
+            return services;
+        } catch (InvalidOperationException | IOException | ClassNotFoundException e){
+            e.printStackTrace();
+            return services;    
+        }
+
+    }
+
+    public static Services open(String dataFile, Services services, boolean merge) throws InvalidOperationException, IOException, ClassNotFoundException{
+        ObjectInputStream in = new ObjectInputStream(new FileInputStream(dataFile));
+        Services newServices = (Services) in.readObject();
+
+        in.close();
+        if (merge){
+            services.merge(newServices);
+            return services;
+        } else {
+            return newServices;
+        }
+    }
+
+    public static void services(Services services){
+        services.showAll();
+    }
+
 
 
     public static void help(){
