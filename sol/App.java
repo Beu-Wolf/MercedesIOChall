@@ -7,13 +7,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 
 public class App {  
@@ -209,8 +206,14 @@ public class App {
         
         dataFile = options[options.length -1];
         if(txt){
+            PrintWriter writer = new PrintWriter(dataFile, "UTF-8");
+            writer.print(services);
+            writer.close();
 
         } else if(csv) {
+            PrintWriter writer = new PrintWriter(dataFile);
+            writer.print(services.toCSV());
+            writer.close();
             
         }else {
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(dataFile));
@@ -221,6 +224,7 @@ public class App {
     }
 
     public static Services restore(Services services, Scanner reader){
+        /*only works for binary files */
        
         String[] options = tokenize(reader);
         boolean merge = false;
@@ -265,19 +269,19 @@ public class App {
     }
 
     public static void services(Services services){
-        services.showAll();
+        System.out.print(services);
     }
 
 
 
     public static void help(){
-        System.out.println("command [args]");
+        System.out.println("command [optional args] obligatory args\n");
         System.out.println("command: ");
-        System.out.println("poll - Retrieves the status from of all configured services");
-        System.out.println("fetch - Retrieves the status from of all configured services");
+        System.out.println("poll [--only= --exclude= ] - Retrieves the status from of all configured services");
+        System.out.println("fetch [--only= --exclude= ]- Retrieves the status from of all configured services");
         System.out.println("services - Lists all known services");
-        System.out.println("backup - backups the current internal state to a file");
-        System.out.println("restore - Imports the internal state from another run or app");
+        System.out.println("backup [--format=txt or csv] file - backups the current internal state to a file");
+        System.out.println("restore [--merge] file - Imports the internal state from another run or app");
         System.out.println("history - Outputs all the data from the local storage");
         System.out.println("status - Summarizes data and displays it in a table-like fashion");
         System.out.println("help - This screen");

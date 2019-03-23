@@ -1,9 +1,3 @@
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -53,9 +47,20 @@ public class Services implements Serializable {
         }
     }
 
-    public void showAll(){
-        for(Service s : getServices()){
-            System.out.println(s);
+    public String toCSV(){
+        String res = "";
+        for(Service s: getServices()){
+            res += s + ",";
         }
+        return res;
+    }
+
+    @Override
+    public String toString(){
+        String res = "";
+        for(Service s : getServices()){
+            res += s + "\n";
+        }
+        return res;
     }
 }
