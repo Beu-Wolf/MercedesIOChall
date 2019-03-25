@@ -65,9 +65,9 @@ public class App {
                 help();
                  break;
 
-            /*case "status":
-                status(services, reader);
-                break;*/
+            case "status":
+                status(services);
+                break;
 
             default:
                 System.out.println("Invalid Command");
@@ -291,6 +291,12 @@ public class App {
     public static void services(Services services){
         /*prints all webservices currently being tested */
         System.out.print(services);
+    }
+
+    public static void status(Services services){
+        System.out.println("|   service   |  uptime (min) |");
+        System.out.println("+-------------+---------------+");
+        services.status();
     }
 
 

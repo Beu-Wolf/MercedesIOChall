@@ -47,6 +47,12 @@ public class Services implements Serializable {
         }
     }
 
+    public void status(){
+        for (Service s : _services){
+            System.out.println(s.status());
+        }
+    }
+
     public String toCSV(){
         String res = "";
         for(Service s: getServices()){

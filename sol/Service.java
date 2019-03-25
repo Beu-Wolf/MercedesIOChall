@@ -6,8 +6,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import java.time.format.DateTimeFormatter;  
+import java.time.Duration;
 import java.time.LocalDateTime;    
 
 public class Service implements Serializable{ 
@@ -19,6 +18,7 @@ public class Service implements Serializable{
     private String _isOnline;
     private String _state;
     private ArrayList<String> _history;
+    private ArrayList<LocalDateTime> _times;
 
     Service(String name, String webSite, String tag, String specifier, String isOnline) {
         _serviceName = name;
@@ -28,6 +28,7 @@ public class Service implements Serializable{
         _isOnline = isOnline;
         _state = "up";
         _history = new ArrayList<String>();
+        _times = new ArrayList<LocalDateTime>();
 
     }
 
@@ -85,8 +86,9 @@ public class Service implements Serializable{
         }
 
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+          
         LocalDateTime now = LocalDateTime.now();
+        _times.add(now);
         String message = now + " - " + getState();
         addToHistory(message);
         System.out.println("[" + getName() + "] " + message);
@@ -104,6 +106,20 @@ public class Service implements Serializable{
         for(String s : getHistory()){
             System.out.println(s);
         }
+    }
+
+    public String status(){
+        Duration max = Duration.ZERO;
+        LocalDateTime now = LocalDateTime.now();
+        for (LocalDateTime d : _times){
+            Duration possMax = Duration.between(d,now);
+            if (possMax.compareTo(max) > 0){
+                max = possMax;
+            }
+        }
+
+
+        return "-> " + getName()  +  "           " + max.toMinutes(); 
     }
 
     @Override
