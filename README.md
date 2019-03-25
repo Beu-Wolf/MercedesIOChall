@@ -46,7 +46,7 @@ backup file [optional args] -> wrong
 ### Problems faced
 
 * no ideia how to calculate mttf bases on collected records
-* cant test if service is down until it is actually down
+* can't test if service is down until it is actually down
 * lack of knowledge for certain problems
 
 ## Built With
