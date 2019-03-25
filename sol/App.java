@@ -134,9 +134,6 @@ public class App {
                     for (String webSite: webSites){
                         excluded.add(webSite);
                     }
-                } else {
-                    System.out.println("Invalid Arguments");
-                    return;
                 }
             }
         }
