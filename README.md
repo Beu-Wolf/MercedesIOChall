@@ -20,8 +20,8 @@ This back-end challenge consisted on making a Command Line Interface (CLI) that 
 
 * input reading and parsig could me more flexible (Command design pattern could be implemented)
 * flag mechanism is hardcoded for each command, could be refactored to be the same for all
-* status command not implemented
-* can only restore previous state from a binary file. 
+* status command mmtf calculation not implemented
+* can only restore previous state from a binary file
 * More services can only be added in a txt and program needs to be restarted
 * Information to fetch in the service HTML page is harcoded for each service
 * More services could be added in config.txt
@@ -45,7 +45,7 @@ backup file [optional args] -> wrong
 
 ### Problems faced
 
-* no ideia how to calculate mttf or uptime based only on HTML page
+* no ideia how to calculate mttf bases on collected records
 * cant test if service is down until it is actually down
 * lack of knowledge for certain problems
 

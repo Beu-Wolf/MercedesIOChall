@@ -294,9 +294,9 @@ public class App {
     }
 
     public static void status(Services services){
-        System.out.println("|   service   |  uptime  |   mttf  |");
-        System.out.println("+-------------+----------+---------+");
-        
+        System.out.println("|   service   |  uptime  |");
+        System.out.println("+-------------+----------+");
+        services.status();
     }
 
 
