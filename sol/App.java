@@ -83,6 +83,7 @@ public class App {
 
     
     public static String[] tokenize(Scanner reader){
+        /*separate input by tokens for process*/ 
         String[] tokens = null;
         if (reader.hasNextLine()){
             String token = reader.nextLine();   
@@ -96,6 +97,7 @@ public class App {
     }
 
     public static void readConfig(String[] args, Services services) throws IOException{
+        /*reads services from config file and initiates the Object */
         String configFile = args[0];
         BufferedReader reader = new BufferedReader(new FileReader(configFile));
         String line;
@@ -111,6 +113,7 @@ public class App {
     }
 
    public static void poll(Services services, String[] options){
+       /*checks if website is up or down */
 
         ArrayList<String> included = new ArrayList<>();
         ArrayList<String> excluded = new ArrayList<>();
@@ -118,6 +121,7 @@ public class App {
         if(options != null){
             
             for (int i = 0; i < options.length; i++){
+                /*checks for flags */
                 if(options[i].equals("--only")){
                     i++;
                     String[] webSites = options[i].split(",");
@@ -130,6 +134,9 @@ public class App {
                     for (String webSite: webSites){
                         excluded.add(webSite);
                     }
+                } else {
+                    System.out.println("Invalid Arguments");
+                    return;
                 }
             }
         }
@@ -140,6 +147,7 @@ public class App {
     }
 
     public static void fetch(Services services, Scanner reader){
+        /*executes poll with given interval 20 times */
         String[] options = tokenize(reader);
         int time = 5000;
         int counter = 0;
@@ -149,10 +157,13 @@ public class App {
                 if(options[i].equals("--refresh")){
                     i++;
                     time = Integer.parseInt(options[i])*1000;
+                } else {
+                    System.out.println("Invalid Arguments");
+                    return;
                 }
             }
         }
-        while (counter < 20){
+        while (counter < 20){ //decided to go with 20, could be any number, even infinite
             try {
                 poll(services, options);
                 Thread.sleep(time);
@@ -165,17 +176,22 @@ public class App {
     }
 
     public static void history(Services services, Scanner reader){
+        /*prints history of all polls done */
         String[] options = tokenize(reader);
         ArrayList<String> included = new ArrayList<>();
         
         if (options != null){
             for (int i = 0; i < options.length; i++){
+                /*checks for flags */
                 if(options[i].equals("--only")){
                     i++;
                     String[] webSites = options[i].split(",");
                     for (String webSite : webSites){
                         included.add(webSite);
                     }
+                } else {
+                    System.out.println("Invalid Arguments");
+                    return;
                 }
             }
         }
@@ -184,6 +200,7 @@ public class App {
     }
 
     public static void backup(Services services, Scanner reader) throws IOException{
+        /*writes the current State to a txt, csv or binary file */
         boolean txt = false;
         boolean csv = false;
 
@@ -224,7 +241,7 @@ public class App {
     }
 
     public static Services restore(Services services, Scanner reader){
-        /*only works for binary files */
+        /*only restores binary files */
        
         String[] options = tokenize(reader);
         boolean merge = false;
@@ -232,30 +249,36 @@ public class App {
         if (options == null){
             System.out.println("Please specify a file");
             return services;
-        } else if (options.length == 2){
+        } else if (options.length <= 2){
             for (String s : options){
                 if (s.equals("--merge")){
                     merge = true;
                     break; 
-                }
+                }                    
+                
             }
-        } 
+        } else {
+            System.out.println("Invalid Arguments");
+        }
 
         String dataFile = options[options.length-1];
 
         try {
             return open(dataFile, services, merge);
         }catch(FileNotFoundException e) {
-            System.out.println("Please enter a valid file");
+            System.out.println("Please enter an existing file");
             return services;
         } catch (InvalidOperationException | IOException | ClassNotFoundException e){
-            e.printStackTrace();
+            System.out.println("Please enter a valid file");
             return services;    
         }
 
     }
 
     public static Services open(String dataFile, Services services, boolean merge) throws InvalidOperationException, IOException, ClassNotFoundException{
+        /*sets app curent state to the one in the dataFile */
+        System.out.println("Restoring state");
+        
         ObjectInputStream in = new ObjectInputStream(new FileInputStream(dataFile));
         Services newServices = (Services) in.readObject();
 
@@ -269,12 +292,14 @@ public class App {
     }
 
     public static void services(Services services){
+        /*prints all webservices currently being tested */
         System.out.print(services);
     }
 
 
 
     public static void help(){
+        /*basic help screen */
         System.out.println("command [optional args] obligatory args\n");
         System.out.println("command: ");
         System.out.println("poll [--only= --exclude= ] - Retrieves the status from of all configured services");
@@ -285,7 +310,7 @@ public class App {
         System.out.println("history - Outputs all the data from the local storage");
         System.out.println("status - Summarizes data and displays it in a table-like fashion");
         System.out.println("help - This screen");
-        System.out.println("exit - terminates application");
+        System.out.println("exit - terminates application");    
 
 
     }
