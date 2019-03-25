@@ -294,7 +294,7 @@ public class App {
     }
 
     public static void status(Services services){
-        System.out.println("|   service   |  uptime  |");
+        System.out.println("|   service   |  uptime (min) |");
         System.out.println("+-------------+----------+");
         services.status();
     }

@@ -96,8 +96,8 @@ public class Service implements Serializable{
     }
 
     public void merge(Service s){
-        for(String status : s.getHistory()){
-            if(!getHistory().contains(s))
+        for(String status : s.getHistory()){    
+            if(!getHistory().contains(status))
                 _history.add(status);
         }
     }
